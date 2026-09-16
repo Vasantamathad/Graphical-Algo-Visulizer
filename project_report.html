@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphics Algorithm Visualizer - Project Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #fff;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 20px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        strong {
+            color: #2c3e50;
+        }
+        code {
+            background-color: #f8f9fa;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: Consolas, monospace;
+            color: #e74c3c;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+        .print-btn {
+            display: block;
+            width: 250px;
+            margin: 0 auto 30px;
+            padding: 15px 20px;
+            background-color: #e74c3c;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .print-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+    <button onclick="window.print()" class="print-btn no-print">🖨️ Click Here to Save as PDF</button>
+
+    <h1>Graphics Algorithm Visualizer <br><small>Project Report</small></h1>
+
+    <h2>1. Installed Packages & Dependencies</h2>
+    <p>The project relies on a few key components to function on Windows:</p>
+    <ul>
+        <li><strong>GCC Compiler (MinGW-w64)</strong>: This is the C/C++ compiler suite (<code>g++</code>) used to translate your code into a runnable executable.</li>
+        <li><strong>WinBGIm Library (64-bit port)</strong>: A Windows port of the classic Borland Graphics Interface (BGI). Standard C does not have built-in graphics, so this library is used to create a window, draw lines, rectangles, colors, and handle keyboard input.</li>
+        <li><strong>Windows API Libraries</strong> (<code>gdi32</code>, <code>comdlg32</code>, <code>uuid</code>, <code>oleaut32</code>, <code>ole32</code>): These are low-level Microsoft Windows libraries that WinBGIm depends on to draw graphics on your screen and interface with the operating system.</li>
+    </ul>
+
+    <h2>2. Overview of the C Program (<code>main.c</code>)</h2>
+    <p>The C program is an <strong>Educational Algorithm Visualizer</strong>. It provides a menu-driven, graphical interface to visually demonstrate how fundamental computer graphics algorithms work step-by-step. It draws a mathematical coordinate system, plots points representing pixels, and animates the drawing process with varying speeds.</p>
+
+    <h2>3. What Does Which File Do?</h2>
+    <ul>
+        <li><strong><code>main.c</code></strong>: The core of the application. It contains the menu UI, screen drawing logic, and the mathematical implementation of all the line-drawing and clipping algorithms.</li>
+        <li><strong><code>build.ps1</code></strong>: A PowerShell build script. It automates the process of compiling the graphics source code into a library, and then links that library with <code>main.c</code> to generate the final executable.</li>
+        <li><strong><code>libbgi.a</code></strong>: A compiled static library file that contains the actual implementation of the WinBGIm graphics functions.</li>
+        <li><strong><code>graphics.h</code> & <code>winbgim.h</code></strong>: Header files that define the available graphics functions (like <code>line()</code>, <code>putpixel()</code>, <code>initwindow()</code>) so that <code>main.c</code> can use them.</li>
+        <li><strong><code>WinBGIm-64-main/</code></strong>: A folder containing the raw C++ source code used to build the <code>libbgi.a</code> library.</li>
+        <li><strong><code>visualizer.exe</code></strong>: The final, ready-to-run Windows application that is produced after running the build script.</li>
+    </ul>
+
+    <h2>4. Algorithms Built & How They Work</h2>
+    <p>The program builds and visualizes four core graphics algorithms:</p>
+
+    <h3>A. DDA (Digital Differential Analyzer) Line Algorithm</h3>
+    <ul>
+        <li><strong>How it works</strong>: It calculates the difference in X (<code>dx</code>) and Y (<code>dy</code>) coordinates between two points. It determines the number of "steps" required based on whichever difference is larger. It then calculates a small floating-point increment for X and Y, adding it repeatedly in a loop to draw the line.</li>
+        <li><strong>Characteristics</strong>: Simple to understand, but slightly slower for a computer to execute because it relies on floating-point decimal math.</li>
+    </ul>
+
+    <h3>B. Bresenham's Line Algorithm</h3>
+    <ul>
+        <li><strong>How it works</strong>: Highly optimized for performance. It uses only integer arithmetic (addition and subtraction). It tracks a "decision parameter" (an error value) that accumulates as the line progresses across the major axis. If the error gets too high, it increments the coordinate on the minor axis and resets the error.</li>
+        <li><strong>Characteristics</strong>: Fast and precise, heavily used in hardware rendering.</li>
+    </ul>
+
+    <h3>C. Midpoint Line Algorithm</h3>
+    <ul>
+        <li><strong>How it works</strong>: Similar to Bresenham, it's an integer-based algorithm. At each step, it calculates the exact geometric midpoint between two possible candidate pixels for the next dot. By evaluating the line's implicit equation at this midpoint, it mathematically decides which pixel is closer to the true line.</li>
+    </ul>
+
+    <h3>D. Cohen-Sutherland Line Clipping Algorithm</h3>
+    <ul>
+        <li><strong>How it works</strong>: Used to cut off parts of a line that fall outside a designated viewing window. It divides the 2D space into 9 regions using 4-bit binary codes (Top, Bottom, Right, Left).</li>
+        <li><strong>Process</strong>: It assigns a code to the start and end points of a line. By performing quick Bitwise <code>AND</code>/<code>OR</code> operations on these codes, it can "trivially accept" lines fully inside the window or "trivially reject" lines fully outside. For lines that cross the boundary, it mathematically calculates the exact intersection points to clip them perfectly.</li>
+    </ul>
+
+    <div class="footer">
+        Generated for Graphics Algorithm Visualizer Project
+    </div>
+</body>
+</html>
